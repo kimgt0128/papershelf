@@ -2,11 +2,11 @@
 
 PaperShelf의 목표는 고성능 컴퓨팅(HPC) 논문에서 질문에 답하는 문단을 찾고, 해당 버전의 원문에서 근거를 확인하는 것이다. 예를 들어 “이 MPI 벤치마크는 몇 번 반복했는가?”라는 질문에는 실험 횟수와 함께 그 조건을 설명한 문단을 제시한다.
 
-현재는 Spring Boot API가 논문 묶음의 적재 요청을 PostgreSQL에 `QUEUED`로 저장하고 작업 상태를 반환한다. 다음 단계에서는 워커가 논문을 문단 단위로 색인하고, 검색기가 질문에 맞는 문단을 찾아 인용한다.
+작업을 접수하면 워커가 로컬 HTML에서 문단을 추출해 PostgreSQL에 저장한다. 논문 ID·버전·문단 번호로 본문과 출처를 조회할 수 있다. 임베딩과 질문 검색은 다음 단계다.
 
 ## 아키텍처
 
-![현재는 클라이언트가 Spring Boot API를 통해 PostgreSQL에 적재 작업을 접수하고 조회한다. 계획 단계에서는 워커가 논문을 문단별로 분할·색인하고, 검색기가 질문의 근거 문단과 원문 링크를 반환한다.](docs/diagrams/architecture.svg)
+![현재는 작업을 접수해 원문 문단을 저장한다. 이후 임베딩과 질문 검색을 추가한다.](docs/diagrams/architecture.svg)
 
 ## 측정 지표
 
@@ -32,7 +32,13 @@ API는 기본 `http://localhost:8080`, DB는 `127.0.0.1:15433`에서 열린다. 
 
 ## 적재 접수와 조회
 
-아래 명령은 같은 `runId`에서 `demo-01` 묶음을 접수한다. `runId`는 UUID, `shardId`는 1~128자의 공백이 아닌 문자열이다. 같은 두 값을 다시 보내면 같은 `jobId`를 반환한다.
+예제 manifest에 등록된 원문을 먼저 준비한다. HTML은 로컬에만 보관한다.
+
+```bash
+curl -fL https://arxiv.org/html/2508.13397v1 -o corpus/demo-01/2508.13397v1.html
+```
+
+각 묶음은 `corpus/{shardId}/manifest.txt`에 버전이 붙은 arXiv ID를 한 줄에 하나씩 적고, 같은 디렉터리에 `{ID}.html`을 둔다. 현재는 숫자 형식의 arXiv ID를 지원한다. 같은 `runId`와 `shardId`로 재접수하면 같은 작업 ID를 반환한다.
 
 ```bash
 curl -i http://localhost:8080/ingest \
@@ -50,7 +56,13 @@ Content-Type: application/json
 {"jobId":"087b49aa-296c-45c1-a99a-b07ce86f1333","runId":"4c051714-1841-47c7-a265-81d0f8070da4","shardId":"demo-01","status":"QUEUED"}
 ```
 
-반환된 `Location`에 GET을 보내면 `200 OK`와 같은 형식의 JSON을 받는다. 잘못된 UUID나 빈 `shardId`는 `400`, 존재하지 않는 작업 ID는 `404`이며 오류 본문은 `application/problem+json`이다.
+반환된 `Location`에서 `QUEUED → PROCESSING → COMPLETED` 상태를 조회한다. 실패하면 `FAILED`와 `failedStage`(manifest, read, parse, store)를 반환한다. 중간 실패 전에 저장한 논문은 조회할 수 있다. 입력을 고치고 새 `runId`로 접수하면 같은 원문은 중복 저장하지 않는다. 워커가 종료되면 5분 lease 만료 후 다른 워커가 작업을 이어받는다.
+
+```bash
+curl http://localhost:8080/papers/2508.13397/versions/1/paragraphs/47
+```
+
+예제 원문의 47번 문단은 §4.1에서 실험 반복 횟수와 오차 막대를 설명한다. 응답의 `sourceUri`로 원문을 연다. 없는 문단은 `404`다.
 
 ## 팀 코드 읽기
 

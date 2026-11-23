@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 
 import io.github.kimgt0128.papershelf.corpus.CorpusManifest;
+import io.github.kimgt0128.papershelf.index.PassageVectorWriter;
 import io.github.kimgt0128.papershelf.index.PaperHtmlParser;
 import io.github.kimgt0128.papershelf.index.PaperParagraphStore;
 import org.slf4j.Logger;
@@ -21,7 +22,11 @@ public class IngestionWorker {
     private final PaperHtmlParser parser;
     private final PaperParagraphStore store;
 
-    public IngestionWorker(IngestQueue queue, CorpusManifest manifest, PaperHtmlParser parser, PaperParagraphStore store) {
+    private final PassageVectorWriter vectors;
+
+    public IngestionWorker(IngestQueue queue, CorpusManifest manifest, PaperHtmlParser parser, PaperParagraphStore store,
+            PassageVectorWriter vectors) {
+        this.vectors = vectors;
         this.queue = queue;
         this.manifest = manifest;
         this.parser = parser;
@@ -45,6 +50,8 @@ public class IngestionWorker {
                 var paragraphs = parser.parse(new String(bytes, StandardCharsets.UTF_8), paper.source());
                 stage = "store";
                 store.save(paper.id(), paper.version(), hash, paragraphs);
+                stage = "index";
+                vectors.index(paper.id(), paper.version(), paragraphs);
             }
         } catch (Exception failure) {
             log.atWarn().addKeyValue("job_id", claim.jobId()).addKeyValue("stage", stage)

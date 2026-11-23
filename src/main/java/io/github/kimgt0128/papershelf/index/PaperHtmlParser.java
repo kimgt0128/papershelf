@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class PaperHtmlParser {
     public List<PaperParagraph> parse(String html, URI source) {
         var document = Jsoup.parse(html);
-        document.select("nav, footer, .ltx_bibliography").remove();
+        document.select("nav, footer, .ltx_bibliography, math annotation, math annotation-xml").remove();
         var paragraphs = new ArrayList<PaperParagraph>();
         for (Element p : document.select("article p, section p")) {
             String text = p.text();

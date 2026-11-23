@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(properties = "papershelf.worker-enabled=false")
@@ -53,6 +54,32 @@ class IngestionWorkerTest {
         mvc.perform(get("/papers/1234.56789/versions/1/paragraphs/1")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.sourceUri").value("https://arxiv.org/html/1234.56789v1#S1"))
                 .andExpect(jsonPath("$.text").value("Ten trials."));
+    }
+
+    @Test
+    void retrievesTheRequestedVersionAndItsParent() throws Exception {
+        var shard = Files.createDirectories(corpus.resolve("search-test"));
+        Files.writeString(shard.resolve("manifest.txt"), "2401.12345v1\n2401.12345v2");
+        for (int version = 1; version <= 2; version++) {
+            Files.writeString(shard.resolve("2401.12345v" + version + ".html"),
+                    "<article><section id='S1'><p>MPI_Allreduce benchmark version " + version + ".</p></section></article>");
+        }
+        enqueue("search-test");
+        worker.runOnce();
+        for (String mode : java.util.List.of("VECTOR", "HYBRID")) {
+            mvc.perform(post("/search").contentType("application/json").content("""
+                    {"question":"MPI_Allreduce","paperId":"2401.12345","version":1,"mode":"%s"}
+                    """.formatted(mode))).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.hits[0].version").value(1))
+                    .andExpect(jsonPath("$.hits[0].paragraph").value("MPI_Allreduce benchmark version 1."))
+                    .andExpect(jsonPath("$.candidates[0].sourceUri").value("https://arxiv.org/html/2401.12345v1#S1"));
+        }
+        mvc.perform(post("/search").contentType("application/json").content("""
+                {"question":"MPI_Allreduce","mode":"HYBRID"}
+                """)).andExpect(status().isOk()).andExpect(jsonPath("$.hits[0].version").value(2));
+        mvc.perform(post("/search").contentType("application/json").content("""
+                {"question":"MPI_Allreduce","paperId":"2401.12345"}
+                """)).andExpect(status().isBadRequest());
     }
 
     @Test

@@ -18,25 +18,9 @@
 
 초기 구성은 실험 전용 **Spring Boot 앱 1개, PostgreSQL + pgvector 1개, Prometheus, Grafana**다. 원문은 로컬 파일, 실행 기록은 실행별 디렉터리에 보관한다. 하나의 앱에서 API와 작업자가 동작하면 동일한 JVM의 요청·작업 객체와 GC를 함께 관측할 수 있다. JMH만 별도 프로세스로 실행한다. 외부 수집 → 로컬 스냅샷 생성 시간과 고정 스냅샷 → 검색 가능 상태까지의 시간은 각각 기록한다.
 
-```mermaid
-flowchart LR
-    A["arXiv 메타데이터와 버전별 원문"] --> B["로컬 스냅샷과 manifest"]
-    B --> C["POST /ingest · 원문 참조 접수"]
-    C --> D["PostgreSQL 작업 큐 · 202 + jobId"]
-    D --> E["워커 · 동시 문서 수 제한"]
-    E --> F["섹션·문단 추출 → 청킹·메타데이터"]
-    F --> G["로컬 ONNX 임베딩"]
-    F --> P["버전별 원문 문단 저장"]
-    G --> H["pgvector 배치 쓰기 → 활성 버전 전환"]
-    Q["질문 · 전체 또는 논문과 버전 지정"] --> R["범위 내 child 검색 · 벡터 단독 또는 벡터+키워드"]
-    H --> R
-    R --> J["후보 재정렬 → parent 문단 복원"]
-    P --> J
-    J --> K["답변 · 버전 고정 인용 링크"]
-    E -.-> M["Actuator → Prometheus → Grafana"]
-    J -.-> M
-    E -.-> T["실행별 JSON 로그 · GC 로그 · JFR"]
-```
+![논문 처리 경로. arXiv 원문을 작업으로 접수하고, 워커가 버전별 원문 문단과 벡터를 저장한다. 검색기는 질문 범위 안에서 후보를 찾고 원문 문단을 복원해 인용한다.](diagrams/pipeline.svg)
+
+현재 구현 범위는 작업 접수와 상태 조회다. 이후 워커는 분할한 문단의 메타데이터와 벡터를 저장하고, 검색기는 선택한 버전의 원문에서 인용할 문단을 복원한다. 워커와 검색 단계의 지표는 Actuator와 Prometheus로 수집해 Grafana에서 보고, 실행별 JSON 로그·GC 로그·JFR로 지연 원인을 확인할 계획이다.
 
 PaperShelf는 Java 21과 Spring Boot를 사용한다. 큐를 구현할 때는 짧은 선점 트랜잭션과 lease token을, 논문 검색에는 버전과 벡터 차원 필터를 적용할 계획이다. 실행 가능한 범위는 [README](../README.md)에 기록한다.
 

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 404" width="840" height="404" role="img" aria-labelledby="pipeline-title pipeline-desc">
+  <title id="pipeline-title">논문 수집부터 원문 인용까지</title>
+  <desc id="pipeline-desc">arXiv 원문 참조를 작업으로 접수하고, 워커가 버전별 문단과 벡터를 저장한다. 검색 범위를 선택한 뒤 후보 문단을 재정렬하고 같은 버전의 원문을 인용한다.</desc>
+  <rect width="840" height="404" fill="#fff"/>
+  <g font-family="Gulim, 굴림, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" fill="#292929" font-weight="400">
+    <text x="24" y="34" font-size="17">논문 수집과 접수</text>
+    <path d="M272 84 h20 m-5 -4 l5 4 -5 4 M544 84 h20 m-5 -4 l5 4 -5 4" fill="none" stroke="#777" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="48" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="148" y="78" text-anchor="middle" font-size="19">arXiv</text>
+    <text x="148" y="102" text-anchor="middle" font-size="15" fill="#505050">메타데이터 · 버전별 원문</text>
+    <rect x="296" y="48" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="420" y="78" text-anchor="middle" font-size="19">로컬 스냅샷</text>
+    <text x="420" y="102" text-anchor="middle" font-size="15" fill="#505050">원문 파일과 manifest</text>
+    <rect x="568" y="48" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="692" y="78" text-anchor="middle" font-size="19">작업 접수</text>
+    <text x="692" y="102" text-anchor="middle" font-size="15" fill="#505050">POST /ingest → PostgreSQL 큐</text>
+    <text x="24" y="162" font-size="17">대기 작업 처리와 색인</text>
+    <path d="M272 212 h20 m-5 -4 l5 4 -5 4 M544 212 h20 m-5 -4 l5 4 -5 4" fill="none" stroke="#777" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="176" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="148" y="206" text-anchor="middle" font-size="19">작업 워커</text>
+    <text x="148" y="230" text-anchor="middle" font-size="15" fill="#505050">동시 처리 문서 수 제한</text>
+    <rect x="296" y="176" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="420" y="206" text-anchor="middle" font-size="19">섹션과 문단 분할</text>
+    <text x="420" y="230" text-anchor="middle" font-size="15" fill="#505050">원문 위치 기록 · 로컬 ONNX 임베딩</text>
+    <rect x="568" y="176" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="692" y="206" text-anchor="middle" font-size="19">문단과 벡터 저장</text>
+    <text x="692" y="230" text-anchor="middle" font-size="15" fill="#505050">pgvector 배치 쓰기 · 버전 공개</text>
+    <text x="24" y="290" font-size="17">질문에서 근거 문단까지</text>
+    <path d="M272 340 h20 m-5 -4 l5 4 -5 4 M544 340 h20 m-5 -4 l5 4 -5 4" fill="none" stroke="#777" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="304" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="148" y="334" text-anchor="middle" font-size="19">검색 범위 선택</text>
+    <text x="148" y="358" text-anchor="middle" font-size="15" fill="#505050">전체 논문 또는 지정한 논문 버전</text>
+    <rect x="296" y="304" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="420" y="334" text-anchor="middle" font-size="19">문단 후보 검색</text>
+    <text x="420" y="358" text-anchor="middle" font-size="15" fill="#505050">벡터 단독 또는 벡터·키워드 결합</text>
+    <rect x="568" y="304" width="248" height="72" rx="8" fill="#f7f7f7"/>
+    <text x="692" y="334" text-anchor="middle" font-size="19">답변과 인용</text>
+    <text x="692" y="358" text-anchor="middle" font-size="15" fill="#505050">재정렬 · 문단 복원 · 원문 링크</text>
+  </g>
+</svg>

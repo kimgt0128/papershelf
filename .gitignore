@@ -7,5 +7,6 @@ out/
 .env
 .env.*
 runs/
+corpus/**/*.html
 *.jfr
 *.log

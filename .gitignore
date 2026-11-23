@@ -10,3 +10,4 @@ runs/
 corpus/**/*.html
 *.jfr
 *.log
+models/

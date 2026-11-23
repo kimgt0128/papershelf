@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:${PAPERSHELF_DB_PORT:15433}/papershelf
+    username: papershelf
+    password: ${PAPERSHELF_DB_PASSWORD}
+  mvc:
+    problemdetails:
+      enabled: true
+  application:
+    name: papershelf
+  main:
+    banner-mode: "off"
+logging:
+  structured:
+    format:
+      console: logstash

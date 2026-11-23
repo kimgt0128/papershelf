@@ -1,0 +1,11 @@
+package io.github.kimgt0128.papershelf;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PaperShelfApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(PaperShelfApplication.class, args);
+    }
+}

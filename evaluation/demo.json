@@ -1,0 +1,8 @@
+[
+  {
+    "question": "How many separate times was each MPI benchmark run to demonstrate reproducibility?",
+    "paperId": "2508.13397",
+    "version": 1,
+    "evidence": [[{"paragraphId": 47, "quote": "Each benchmark was run 10 separate times"}]]
+  }
+]

@@ -1,20 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 276" width="840" height="276" role="img" aria-labelledby="architecture-title architecture-desc">
   <title id="architecture-title">PaperShelf 작업 접수와 논문 검색</title>
-  <desc id="architecture-desc">현재 API는 작업을 PostgreSQL에 접수한다. 계획 단계에서는 워커가 대기 작업의 논문을 색인하고, 검색기가 질문에 맞는 문단과 원문 링크를 반환한다.</desc>
+  <desc id="architecture-desc">현재 워커는 접수한 작업의 버전별 문단을 저장한다. 워커가 대기 작업의 논문을 색인하고, 검색기가 질문에 맞는 문단과 원문 링크를 반환한다.</desc>
   <rect width="840" height="276" fill="#fff"/>
   <g font-family="Gulim, 굴림, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" fill="#292929" font-weight="400">
-    <text x="24" y="34" font-size="17">현재 구현 · 작업 접수와 조회</text>
+    <text x="24" y="34" font-size="17">현재 구현 · 작업 접수와 문단 저장</text>
     <path d="M272 84 h20 m-5 -4 l5 4 -5 4 M544 84 h20 m-5 -4 l5 4 -5 4" fill="none" stroke="#777" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
     <rect x="24" y="48" width="248" height="72" rx="8" fill="#f7f7f7"/>
-    <text x="148" y="78" text-anchor="middle" font-size="19">클라이언트</text>
+    <text x="148" y="78" text-anchor="middle" font-size="19">적재 API</text>
     <text x="148" y="102" text-anchor="middle" font-size="15" fill="#505050">적재 요청 · 상태 조회</text>
     <rect x="296" y="48" width="248" height="72" rx="8" fill="#f7f7f7"/>
-    <text x="420" y="78" text-anchor="middle" font-size="19">Spring Boot API</text>
-    <text x="420" y="102" text-anchor="middle" font-size="15" fill="#505050">작업 ID와 조회 주소 반환</text>
+    <text x="420" y="78" text-anchor="middle" font-size="19">문단 워커</text>
+    <text x="420" y="102" text-anchor="middle" font-size="15" fill="#505050">HTML 파싱 · 출처 기록</text>
     <rect x="568" y="48" width="248" height="72" rx="8" fill="#f7f7f7"/>
     <text x="692" y="78" text-anchor="middle" font-size="19">PostgreSQL</text>
-    <text x="692" y="102" text-anchor="middle" font-size="15" fill="#505050">작업 상태 저장 · QUEUED</text>
-    <text x="24" y="162" font-size="17">구현 계획 · 논문 색인과 검색</text>
+    <text x="692" y="102" text-anchor="middle" font-size="15" fill="#505050">버전별 문단 저장 · 조회</text>
+    <text x="24" y="162" font-size="17">논문 색인과 검색</text>
     <path d="M272 212 h20 m-5 -4 l5 4 -5 4 M544 212 h20 m-5 -4 l5 4 -5 4" fill="none" stroke="#777" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
     <rect x="24" y="176" width="248" height="72" rx="8" fill="#f7f7f7"/>
     <text x="148" y="206" text-anchor="middle" font-size="19">색인 워커</text>

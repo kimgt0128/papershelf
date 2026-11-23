@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.ai:spring-ai-transformers:2.0.2'
+    implementation 'org.jsoup:jsoup:1.21.2'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-aspectj'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -33,4 +35,5 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    systemProperty 'papershelf.worker-enabled', 'false'
 }

@@ -9,7 +9,7 @@ jobs:
       PAPERSHELF_DB_PASSWORD: ci-only
     services:
       postgres:
-        image: postgres:17
+        image: pgvector/pgvector:pg17
         env:
           POSTGRES_DB: papershelf
           POSTGRES_USER: papershelf
@@ -26,4 +26,5 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
+      - run: ./scripts/setup-model.sh
       - run: ./gradlew test

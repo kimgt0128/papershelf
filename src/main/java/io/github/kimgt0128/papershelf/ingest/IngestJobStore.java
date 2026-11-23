@@ -21,7 +21,7 @@ public class IngestJobStore {
                 INSERT INTO ingest_jobs (job_id, run_id, shard_id)
                 VALUES (:jobId, :runId, :shardId)
                 ON CONFLICT (run_id, shard_id) DO UPDATE SET shard_id = EXCLUDED.shard_id
-                RETURNING job_id, run_id, shard_id, status
+                RETURNING job_id, run_id, shard_id, status, failed_stage
                 """)
                 .param("jobId", UUID.randomUUID())
                 .param("runId", request.runId())
@@ -31,7 +31,7 @@ public class IngestJobStore {
     }
 
     public Optional<IngestJob> find(UUID jobId) {
-        return jdbc.sql("SELECT job_id, run_id, shard_id, status FROM ingest_jobs WHERE job_id = :jobId")
+        return jdbc.sql("SELECT job_id, run_id, shard_id, status, failed_stage FROM ingest_jobs WHERE job_id = :jobId")
                 .param("jobId", jobId)
                 .query(IngestJob.class)
                 .optional();
